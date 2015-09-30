@@ -1,5 +1,5 @@
 /*	-------------------------------------------------------------------------------------------------------
-	© 1991-2012 Take-Two Interactive Software and its subsidiaries.  Developed by Firaxis Games.  
+	Â© 1991-2012 Take-Two Interactive Software and its subsidiaries.  Developed by Firaxis Games.  
 	Sid Meier's Civilization V, Civ, Civilization, 2K Games, Firaxis Games, Take-Two Interactive Software 
 	and their respective logos are all trademarks of Take-Two interactive Software, Inc.  
 	All other marks and trademarks are the property of their respective owners.  
@@ -9129,27 +9129,6 @@ bool CvMinorCivAI::IsPeaceBlocked(TeamTypes eTeam) const
 	// Permanent war?
 	if(IsPermanentWar(eTeam))
 		return true;
-
-	// Allies with someone at war with this guy?
-	PlayerTypes eMajor;
-	for(int iMajorLoop = 0; iMajorLoop < MAX_MAJOR_CIVS; iMajorLoop++)
-	{
-		eMajor = (PlayerTypes) iMajorLoop;
-
-		// Major must be alive
-		if(!GET_PLAYER(eMajor).isAlive())
-			continue;
-
-		// Must be allies
-		if(!IsAllies(eMajor))
-			continue;
-
-		// Ally must be at war with this team
-		if(!GET_TEAM(GET_PLAYER(eMajor).getTeam()).isAtWar(eTeam))
-			continue;
-
-		return true;
-	}
 
 	return false;
 }
