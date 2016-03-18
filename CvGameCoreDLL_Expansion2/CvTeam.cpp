@@ -1,5 +1,5 @@
 /*	-------------------------------------------------------------------------------------------------------
-	© 1991-2012 Take-Two Interactive Software and its subsidiaries.  Developed by Firaxis Games.  
+	Â© 1991-2012 Take-Two Interactive Software and its subsidiaries.  Developed by Firaxis Games.  
 	Sid Meier's Civilization V, Civ, Civilization, 2K Games, Firaxis Games, Take-Two Interactive Software 
 	and their respective logos are all trademarks of Take-Two interactive Software, Inc.  
 	All other marks and trademarks are the property of their respective owners.  
@@ -1330,78 +1330,6 @@ void CvTeam::DoNowAtWarOrPeace(TeamTypes eTeam, bool bWar)
 
 			GET_PLAYER(ePlayer).SetDangerPlotsDirty();
 			GET_PLAYER(ePlayer).UpdateReligion();
-
-			// ******************************
-			// Our minor civ allies declare war on eTeam
-			// ******************************
-
-			FStaticVector<PlayerTypes, MAX_CIV_PLAYERS, true, c_eCiv5GameplayDLL, 0> veMinorAllies;
-			for(int iMinorCivLoop = MAX_MAJOR_CIVS; iMinorCivLoop < MAX_CIV_PLAYERS; iMinorCivLoop++)
-			{
-				eMinor = (PlayerTypes) iMinorCivLoop;
-
-				// Must be alive
-				if(!GET_PLAYER(eMinor).isAlive())
-					continue;
-
-				if(GET_PLAYER(eMinor).GetMinorCivAI()->IsAllies(ePlayer))
-				{
-					// Don't declare war on self! (just in case)
-					if(GET_PLAYER(eMinor).getTeam() != eTeam)
-					{
-						// Match war state
-						GET_TEAM(GET_PLAYER(eMinor).getTeam()).DoDeclareWar(eTeam, /*bDefensivePact*/ false, /*bMinorAllyPact*/ true);
-
-						// Add to vector for notification sent out
-						veMinorAllies.push_back(eMinor);
-					}
-				}
-			}
-
-			// Notifications about minor allies that join the war against a major civ
-			if(!veMinorAllies.empty())
-			{
-				if(!GET_TEAM(eTeam).isMinorCiv())
-				{
-					Localization::String strTemp;
-
-					// Notification for us...allies got our back!
-					Localization::String strOurAlliesSummary = Localization::Lookup("TXT_KEY_MISC_YOUR_MINOR_ALLIES_DECLARED_WAR_SUMMARY");
-					strTemp = Localization::Lookup("TXT_KEY_MISC_YOUR_MINOR_ALLIES_DECLARED_WAR");
-					strTemp << GET_TEAM(eTeam).getName().GetCString();
-					CvString strOurAlliesMessage = strTemp.toUTF8();
-
-					// Notification for players on the other team
-					Localization::String strTheirEnemiesSummary = Localization::Lookup("TXT_KEY_MISC_MINOR_ALLIES_DECLARED_WAR_ON_YOU_SUMMARY");
-					strTemp = Localization::Lookup("TXT_KEY_MISC_MINOR_ALLIES_DECLARED_WAR_ON_YOU");
-					strTemp << getName().GetCString();
-					CvString strTheirEnemiesMessage = strTemp.toUTF8();
-
-					for(uint iMinorCivLoop = 0; iMinorCivLoop < veMinorAllies.size(); iMinorCivLoop++)
-					{
-						eMinor = veMinorAllies[iMinorCivLoop];
-						strTemp = Localization::Lookup(GET_TEAM(GET_PLAYER(eMinor).getTeam()).getName().GetCString());
-						strOurAlliesMessage = strOurAlliesMessage + "[NEWLINE]" + strTemp.toUTF8();
-						strTheirEnemiesMessage = strTheirEnemiesMessage + "[NEWLINE]" + strTemp.toUTF8();
-					}
-
-					GET_PLAYER(ePlayer).GetNotifications()->Add(NOTIFICATION_WAR, strOurAlliesMessage, strOurAlliesSummary.toUTF8(), -1, -1, veMinorAllies.front(), eTeam);
-
-					for(int iOtherPlayerCivLoop = 0; iOtherPlayerCivLoop < MAX_MAJOR_CIVS; iOtherPlayerCivLoop++)
-					{
-						PlayerTypes eOtherPlayer = (PlayerTypes) iOtherPlayerCivLoop;
-
-						if(!GET_PLAYER(eOtherPlayer).isAlive())
-							continue;
-
-						if(GET_PLAYER(eOtherPlayer).getTeam() != eTeam)
-							continue;
-
-						GET_PLAYER(eOtherPlayer).GetNotifications()->Add(NOTIFICATION_WAR_ACTIVE_PLAYER, strTheirEnemiesMessage, strTheirEnemiesSummary.toUTF8(), -1, -1, veMinorAllies.front());
-					}
-
-				}
-			}
 		}
 	}
 }
